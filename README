@@ -1,13 +1,34 @@
-ActiveRecordEach
-================
+=ActiveRecordEach
 
-Introduction goes here.
+==Context
+
+If you have to do a migration with a lot of rows, you can't do something like these
+  User.find(:all).each do { |u| ... }
+because you load all the table in ruby memmory. Ruby-prof says that these is not good, so I do these.
+
+==Summary & Examples
+
+ActiveRecordEach is a 5 minutes plugin that implements ActiveRecord::Base.each instance method.
+
+It acepts any parameter that find accept except :limit
+
+Now you can easily do
+  User.each (:conditions => "users.login LIKE 'g%') { |u| Notifier.deliver_report(u) }
+
+==Todo
+It could be interesting make somthing like these:
+  User.each (:step => 5) {|u| puts u.login}
+
+And fetch 5 users per query
+
+==Installation
+
+You have two methods:
+ * If your rails app is managed by git
+  git-submodule add   git://github.com/guillermo/active_record_each.git vendor/plugins/active_record_each
+
+ * If doesn't
+  git-clone git://github.com/guillermo/active_record_each.git vendor/plugins/active_record_each
 
 
-Example
-=======
-
-Example goes here.
-
-
-Copyright (c) 2008 [name of plugin creator], released under the MIT license
+Copyright (c) 2008 Guillermo Álvarez Fernández, released under the MIT license

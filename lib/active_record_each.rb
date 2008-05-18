@@ -42,8 +42,8 @@ class ActiveRecord::Base
       while o
         with_scope (:find => {:conditions => [ "#{primary_key} > ?", i]} ) do
           if o=find_initial(options)
-            yield(o) 
             i=o.send primary_key
+            yield(o) 
           end
         end
       end

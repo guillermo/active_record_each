@@ -16,8 +16,30 @@ class ActiveRecord::Base
       options = args.extract_options!
       validate_find_options(options)
       set_readonly_option!(options)
+
+      # if we're passed order then fast mode MAY not work, so we'll stick
+      # with the slow mode
+      if options[:order]
+        slow_each(options,&block)
+      else
+        fast_each(options, &block)
+      end
+    end
+    
+    def slow_each(options)
+      count(options).times do |i|
+        yield(find_initial(options.merge({:offset => i})))
+      end      
+    end
+
+    # because :offset can be quite slow for large tables as really the DB
+    # still has to execute the query and then seek into the query to return 
+    # you the row you want.
+    # using the primary_key allows us to piggy back on the index
+    def fast_each(options)
+      i=minimum(primary_key, options)
       
-      #As i know, not all the backends sort primay_key columns
+      # not all the backends always sort primay_key columns so do it manuall
       options.update(:order => "#{table_name}.#{primary_key} ASC")
       
       i=minimum(primary_key, options) or return

@@ -20,12 +20,12 @@ class ActiveRecord::Base
       #As i know, not all the backends sort primay_key columns
       options.update(:order => "#{table_name}.#{primary_key} ASC")
       
-      i=minimum(primary_key, options)
+      i=minimum(primary_key, options) or return
       # first the first object by id
       yield(o=find_one(i, {}))
       # as long as we keep finding objects, keep going
       while o
-        with_scope (:find => {:conditions => [ "#{table_name}.#{primary_key} > ?", i]} ) do
+        with_scope(:find => {:conditions => [ "#{table_name}.#{primary_key} > ?", i]} ) do
           if o=find_initial(options)
             i=o.send primary_key
             yield(o) 

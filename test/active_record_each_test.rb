@@ -50,4 +50,10 @@ class ActiveRecordEachTest < Test::Unit::TestCase
   def test_map_method_with_conditions
     assert_equal ["Guillermo"], User.map(:conditions => "users.name LIKE 'G%'") {|u| u.name}
   end
+
+  def test_empty_result_set_dont_throw_exception
+    assert_nothing_raised (ActiveRecord::RecordNotFound) do
+      User.each(:conditions => "id = -1") { |u| u.name }
+    end
+  end
 end

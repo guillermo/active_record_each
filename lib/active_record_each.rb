@@ -13,37 +13,22 @@ class ActiveRecord::Base
     #   end
     #
     def each(*args,&block)
-      fast_each(*args, &block)
-    end
-    
-    def slow_each(*args)
       options = args.extract_options!
       validate_find_options(options)
       set_readonly_option!(options)
-
-      count(options).times do |i|
-        yield(find_initial(options.merge({:offset => i})))
-      end      
-    end
-
-    # because :offset can be quite slow for large tables as really the DB
-    # still has to execute the query and then seek into the query to return 
-    # you the row you want.
-    # using the primary_key allows us to piggy back on the index
-    def fast_each (*args)
-      options = args.extract_options!
-      validate_find_options(options)
-      set_readonly_option!(options)
+      
+      #As i know, not all the backends sort primay_key columns
+      options.update(:order => "#{table_name}.#{primary_key} ASC")
       
       i=minimum(primary_key, options)
       # first the first object by id
       yield(o=find_one(i, {}))
       # as long as we keep finding objects, keep going
       while o
-        with_scope (:find => {:conditions => [ "#{primary_key} > ?", i]} ) do
+        with_scope (:find => {:conditions => [ "#{table_name}.#{primary_key} > ?", i]} ) do
           if o=find_initial(options)
-            yield(o) 
             i=o.send primary_key
+            yield(o) 
           end
         end
       end

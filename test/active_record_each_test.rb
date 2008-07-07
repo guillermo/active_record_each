@@ -1,10 +1,15 @@
 require 'rubygems'
-require 'activerecord'
+begin
+  require 'activerecord'
+rescue LoadError
+  require 'active_record'
+end
+
 require File.dirname(__FILE__) + '/../lib/active_record_each.rb'
 require 'test/unit'
 
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
-ActiveRecord::Migration.create_table :users do |t| ; t.string :name ; end
+ActiveRecord::Migration.create_table :users do |t| ; t.column :name, :string ; end
 
 class User < ActiveRecord::Base
 end

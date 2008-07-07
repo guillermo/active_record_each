@@ -13,7 +13,7 @@ class ActiveRecord::Base
     #   end
     #
     def each(*args,&block)
-      options = args.extract_options!
+      options = extract_options_from_args!(args)
       validate_find_options(options)
       set_readonly_option!(options)
 
@@ -64,7 +64,7 @@ class ActiveRecord::Base
     #   clean_password = User.map { |u| magic_recover_password(u.md5) }
     #
     def map(*args)
-      options = args.extract_options!
+      options = extract_options_from_args!(args)
       validate_find_options(options)
       set_readonly_option!(options)
 

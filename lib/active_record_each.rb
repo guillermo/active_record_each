@@ -37,12 +37,12 @@ class ActiveRecord::Base
     # you the row you want.
     # using the primary_key allows us to piggy back on the index
     def fast_each(options)
-      i=minimum(primary_key, options)
+      i=minimum("#{table_name}.#{primary_key}", options)
       
       # not all the backends always sort primay_key columns so do it manuall
       options.update(:order => "#{table_name}.#{primary_key} ASC")
       
-      i=minimum(primary_key, options) or return
+      i=minimum("#{table_name}.#{primary_key}", options) or return
       # first the first object by id
       yield(o=find_one(i, {}))
       # as long as we keep finding objects, keep going
